@@ -1,0 +1,165 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PARA LOS DEL ZONA</title>
+    <style>
+        body, html {
+            height: 100%;
+            margin: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            background-color: #f0f8ff;
+            font-family: Arial, sans-serif;
+        }
+        #envelope {
+            width: 90vw;
+            max-width: 300px;
+            height: 60vw;
+            max-height: 200px;
+            background-color: #f0e68c;
+            position: relative;
+            cursor: pointer;
+            transition: transform 0.5s;
+        }
+        #envelope:before {
+            content: '';
+            position: absolute;
+            top: 0;
+            right: 0;
+            border-left: 45vw solid transparent;
+            border-right: 45vw solid transparent;
+            border-top: 30vw solid #d8c76f;
+            max-border-left: 150px solid transparent;
+            max-border-right: 150px solid transparent;
+            max-border-top: 100px solid #d8c76f;
+            transition: transform 0.5s;
+        }
+        #envelope.open:before {
+            transform: rotateX(180deg);
+            z-index: -1;
+        }
+        #letter {
+            position: absolute;
+            top: 5%;
+            left: 5%;
+            right: 5%;
+            bottom: 5%;
+            background-color: #fff;
+            transition: transform 0.5s;
+            overflow: hidden;
+            padding: 5%;
+            box-sizing: border-box;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: space-between;
+        }
+        #envelope.open #letter {
+            transform: translateY(-30vw);
+            max-transform: translateY(-100px);
+        }
+        #heart {
+            width: 20%;
+            max-width: 50px;
+            height: auto;
+            margin-top: 5%;
+        }
+        #message {
+            font-size: 4vw;
+            max-font-size: 18px;
+            color: #333;
+            text-align: center;
+            margin-top: 5%;
+        }
+        #flowers {
+            width: 100%;
+            height: 30%;
+            max-height: 60px;
+        }
+        @media (min-width: 600px) {
+            #envelope:before {
+                border-left: 150px solid transparent;
+                border-right: 150px solid transparent;
+                border-top: 100px solid #d8c76f;
+            }
+            #envelope.open #letter {
+                transform: translateY(-100px);
+            }
+            #message {
+                font-size: 18px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div id="envelope">
+        <div id="letter">
+            <div id="message">¡Feliz Día de la Primavera!</div>
+            <svg id="heart" viewBox="0 0 32 32" xmlns="http://www.w3.org/2000/svg">
+                <path fill="#ff4136" d="M16 28.261c0 0-14-7.926-14-17.046 0-9.356 13.159-10.399 14-0.454 1.011-9.938 14-8.903 14 0.454 0 9.12-14 17.046-14 17.046z"/>
+            </svg>
+            <canvas id="flowers"></canvas>
+        </div>
+    </div>
+    <script>
+        const envelope = document.getElementById('envelope');
+        const flowers = document.getElementById('flowers');
+        const ctx = flowers.getContext('2d');
+
+        function resizeCanvas() {
+            flowers.width = flowers.offsetWidth;
+            flowers.height = flowers.offsetHeight;
+        }
+
+        function drawFlower(x, y, size, rotation) {
+            ctx.save();
+            ctx.translate(x, y);
+            ctx.rotate(rotation);
+            ctx.beginPath();
+            for (let i = 0; i < 5; i++) {
+                ctx.ellipse(0, 0, size, size / 2, (i * 72 * Math.PI) / 180, 0, 2 * Math.PI);
+            }
+            ctx.fillStyle = '#FFD700';
+            ctx.fill();
+            ctx.restore();
+            ctx.beginPath();
+            ctx.arc(x, y, size / 5, 0, 2 * Math.PI);
+            ctx.fillStyle = '#FFA500';
+            ctx.fill();
+        }
+
+        function drawBouquet() {
+            ctx.clearRect(0, 0, flowers.width, flowers.height);
+            const flowerCount = Math.floor(flowers.width / 60);
+            for (let i = 0; i < flowerCount; i++) {
+                const x = (i + 0.5) * (flowers.width / flowerCount);
+                const y = flowers.height / 2 + (Math.random() - 0.5) * (flowers.height / 2);
+                const size = flowers.width / 30 + Math.random() * (flowers.width / 60);
+                const rotation = Math.random() * Math.PI;
+                drawFlower(x, y, size, rotation);
+            }
+        }
+
+        envelope.addEventListener('click', function() {
+            this.classList.toggle('open');
+            if (this.classList.contains('open')) {
+                setTimeout(drawBouquet, 500);
+            } else {
+                ctx.clearRect(0, 0, flowers.width, flowers.height);
+            }
+        });
+
+        window.addEventListener('resize', function() {
+            resizeCanvas();
+            if (envelope.classList.contains('open')) {
+                drawBouquet();
+            }
+        });
+
+        resizeCanvas();
+    </script>
+</body>
+</html>
